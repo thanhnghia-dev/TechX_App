@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">TechX</string>
+    <string name="full_name">Họ và tên</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Số điện thoại</string>
+    <string name="password">Mật khẩu</string>
+    <string name="confirm_password">Xác nhận mật khẩu</string>
+    <string name="google">Tiếp tục với Google</string>
+    <string name="facebook">Tiếp tục với Facebook</string>
+    <string name="signup">Đăng ký</string>
+    <string name="login">Đăng nhập</string>
+    <string name="forgot_password">Quên mật khẩu</string>
+    <string name="save">Lưu</string>
+    <string name="confirm">Xác nhận</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="account">Tài khoản</string>
+    <string name="shopping_cart">Giỏ hàng</string>
+    <string name="profile">Thông tin cá nhân</string>
+    <string name="category">Danh mục</string>
+    <string name="home">Trang chủ</string>
+    <string name="my_order">Đơn hàng của tôi</string>
+    <string name="product_favorite">Yêu thích</string>
+    <string name="change_password">Thay đổi mật khẩu</string>
+    <string name="address">Địa chỉ</string>
+</resources>
