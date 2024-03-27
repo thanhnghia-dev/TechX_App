@@ -23,17 +23,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.geocomply.techx_app.adapter.CartAdapter;
-import com.geocomply.techx_app.adapter.FavoriteAdapter;
 import com.geocomply.techx_app.api.ApiService;
 import com.geocomply.techx_app.common.LoginSession;
 import com.geocomply.techx_app.model.CartItem;
-import com.geocomply.techx_app.model.Favorite;
 import com.geocomply.techx_app.model.ShoppingCart;
 import com.geocomply.techx_app.model.Product;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -91,7 +88,7 @@ public class CartFragment extends Fragment {
         });
 
         btnDelete.setOnClickListener(v -> {
-            Toast.makeText(getActivity(), "Xóa toàn bộ giỏ hàng", Toast.LENGTH_SHORT).show();
+            handleDeleteCart();
         });
     }
 
@@ -101,7 +98,7 @@ public class CartFragment extends Fragment {
         try {
             cartUpdateListener = (OnCartUpdateListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement OnCartUpdateListener");
+            throw new ClassCastException(context + " must implement OnCartUpdateListener");
         }
     }
 
@@ -143,6 +140,30 @@ public class CartFragment extends Fragment {
 
             @Override
             public void onFailure(Call<ArrayList<ShoppingCart>> call, Throwable t) {
+                Log.e("API_ERROR", "Error occurred: " + t.getMessage());
+                Toast.makeText(getActivity(), "Get API Failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // Delete all cart
+    private void handleDeleteCart() {
+        String userId = LoginSession.getIdKey();
+        Call<Void> delete = ApiService.apiService.deleteShoppingCartsByUserId(Integer.parseInt(userId));
+
+        delete.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(getActivity(), "Giỏ hàng đã xóa thành công", Toast.LENGTH_SHORT).show();
+                    updateCartCount(0);
+                } else {
+                    Toast.makeText(getActivity(), "Giỏ hàng xóa thất bại", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
                 Log.e("API_ERROR", "Error occurred: " + t.getMessage());
                 Toast.makeText(getActivity(), "Get API Failed", Toast.LENGTH_SHORT).show();
             }

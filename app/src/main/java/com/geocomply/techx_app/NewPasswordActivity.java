@@ -4,8 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.format.Formatter;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -15,6 +16,7 @@ import com.geocomply.techx_app.api.ApiService;
 import com.geocomply.techx_app.common.LoginSession;
 import com.geocomply.techx_app.common.UserIdCallback;
 import com.geocomply.techx_app.common.UserUtils;
+import com.geocomply.techx_app.model.Log;
 import com.geocomply.techx_app.model.User;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -75,6 +77,10 @@ public class NewPasswordActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
+                    Log log = new Log(id, Log.ALERT, getPhoneIpAddress(), "Reset password",
+                            "Email: " + email + " resets password successful", Log.SUCCESS);
+                    addLog(log);
+
                     LoginSession.clearSession();
                     Intent intent = new Intent(NewPasswordActivity.this, LoginActivity.class);
                     startActivity(intent);
@@ -84,6 +90,10 @@ public class NewPasswordActivity extends AppCompatActivity {
                             "Đặt lại mật khẩu thành công!", Toast.LENGTH_SHORT).show();
 
                 } else {
+                    Log log = new Log(id, Log.WARNING, getPhoneIpAddress(), "Reset password",
+                            "Email: " + email + " resets password failed", Log.FAILED);
+                    addLog(log);
+
                     Toast.makeText(NewPasswordActivity.this,
                             "Đặt lại mật khẩu thất bại!", Toast.LENGTH_SHORT).show();
                 }
@@ -91,11 +101,33 @@ public class NewPasswordActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Log.e("API_ERROR", "Error occurred: " + t.getMessage());
+                android.util.Log.e("API_ERROR", "Error occurred: " + t.getMessage());
                 Toast.makeText(NewPasswordActivity.this,
                         "Get API Failed", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    private void addLog(Log log) {
+        Call<Log> passwordLog = ApiService.apiService.postLog(log);
+
+        passwordLog.enqueue(new Callback<Log>() {
+            @Override
+            public void onResponse(Call<Log> call, Response<Log> response) {
+                if (response.isSuccessful()) {
+                    android.util.Log.e("API_SUCCESS", "Logs: " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Log> call, Throwable t) {
+                android.util.Log.e("API_ERROR", "Error occurred: " + t.getMessage());
+            }
+        });
+    }
+
+    private String getPhoneIpAddress() {
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        return Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
+    }
 }

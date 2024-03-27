@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical"
-    tools:context=".SignupActivity">
+    tools:context=".AddressActivity">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
@@ -36,7 +36,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@string/address"
+                    android:text="Địa chỉ giao hàng"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
@@ -46,7 +46,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -103,61 +104,60 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                app:errorEnabled="true"
                 android:hint="Tỉnh/ Thành Phố"
                 app:hintTextColor="@color/black"
-                app:boxStrokeColor="@color/gray_light">
+                app:boxStrokeColor="@color/gray_light"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <AutoCompleteTextView
                     android:id="@+id/province"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
                     android:drawableStart="@drawable/icon_location"
-                    android:drawablePadding="16dp"/>
+                    android:drawablePadding="16dp"
+                    android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                app:errorEnabled="true"
+                android:layout_marginTop="20dp"
                 android:hint="Quận/ Huyện"
                 app:hintTextColor="@color/black"
-                app:boxStrokeColor="@color/gray_light">
+                app:boxStrokeColor="@color/gray_light"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <AutoCompleteTextView
                     android:id="@+id/city"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
                     android:drawableStart="@drawable/icon_location"
-                    android:drawablePadding="16dp"/>
+                    android:drawablePadding="16dp"
+                    android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                app:errorEnabled="true"
+                android:layout_marginTop="20dp"
                 android:hint="Phường/ Xã"
                 app:hintTextColor="@color/black"
-                app:boxStrokeColor="@color/gray_light">
+                app:boxStrokeColor="@color/gray_light"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <AutoCompleteTextView
                     android:id="@+id/ward"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
                     android:drawableStart="@drawable/icon_location"
-                    android:drawablePadding="16dp"/>
+                    android:drawablePadding="16dp"
+                    android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="20dp"
                 app:errorEnabled="true"
                 android:hint="Địa chỉ nhận hàng"
                 app:hintTextColor="@color/black"

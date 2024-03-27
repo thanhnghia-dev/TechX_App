@@ -3,6 +3,7 @@ package com.geocomply.techx_app.api;
 import com.geocomply.techx_app.model.Address;
 import com.geocomply.techx_app.model.Comment;
 import com.geocomply.techx_app.model.Favorite;
+import com.geocomply.techx_app.model.Log;
 import com.geocomply.techx_app.model.Product;
 import com.geocomply.techx_app.model.ShoppingCart;
 import com.geocomply.techx_app.model.User;
@@ -84,4 +85,9 @@ public interface ApiService {
     Call<Address> postAddress(@Body Address address);
     @GET("Addresses/User/{userId}")
     Call<Address> getAddressByUserId(@Path("userId") int userId);
+    @PUT("Addresses/User/{userId}")
+    Call<Void> putAddress(@Path("userId") int userId, @Body Address address);
+
+    @POST("Logs")
+    Call<Log> postLog(@Body Log log);
 }

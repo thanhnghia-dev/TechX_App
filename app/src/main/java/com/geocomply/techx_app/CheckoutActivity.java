@@ -93,8 +93,6 @@ public class CheckoutActivity extends AppCompatActivity {
         });
 
         btnBack.setOnClickListener(view -> {
-            Intent intent = new Intent(this, CartActivity.class);
-            startActivity(intent);
             finish();
         });
     }

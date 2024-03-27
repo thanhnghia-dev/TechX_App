@@ -118,7 +118,9 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
                             android:text="Địa chỉ chi tiết"
-                            android:textColor="@color/gray_light"/>
+                            android:textColor="@color/gray_light"
+                            android:drawableLeft="@drawable/icon_location"
+                            android:drawablePadding="8dp"/>
                     </LinearLayout>
 
                     <ImageView

@@ -10,8 +10,9 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.format.Formatter;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
@@ -21,8 +22,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.geocomply.techx_app.api.ApiService;
+import com.geocomply.techx_app.common.AddressIdCallback;
 import com.geocomply.techx_app.common.LoginSession;
+import com.geocomply.techx_app.common.UserIdCallback;
 import com.geocomply.techx_app.model.Address;
+import com.geocomply.techx_app.model.Log;
 import com.geocomply.techx_app.model.User;
 
 import retrofit2.Call;
@@ -32,7 +36,7 @@ import retrofit2.Response;
 public class ProfileActivity extends AppCompatActivity {
     TextView tvName, tvAddress, tvEmail, tvPhone;
     ImageView btnBack;
-    RelativeLayout changePassword, editProfile, deleteAccount;
+    RelativeLayout changePassword, editProfile, addressList, deleteAccount;
     LoginSession session;
 
     @SuppressLint("MissingInflatedId")
@@ -48,6 +52,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
         changePassword = findViewById(R.id.changePassword);
         editProfile = findViewById(R.id.editProfile);
+        addressList = findViewById(R.id.addressList);
         deleteAccount = findViewById(R.id.deleteAccount);
 
         session = new LoginSession(getApplicationContext());
@@ -61,19 +66,30 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         btnBack.setOnClickListener(view -> {
-            Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
-            startActivity(intent);
             finish();
         });
 
         editProfile.setOnClickListener(view -> {
             Intent intent = new Intent(ProfileActivity.this, EditProfileActivity.class);
             startActivity(intent);
+            finish();
+        });
+
+        addressList.setOnClickListener(view -> {
+            getAddressIdByUserId(Integer.parseInt(id), addressId -> {
+                Intent intent = new Intent(ProfileActivity.this, AddressActivity.class);
+                if (addressId > 0) {
+                    intent.putExtra("addressId", addressId);
+                }
+                startActivity(intent);
+            });
+
         });
 
         changePassword.setOnClickListener(view -> {
             Intent intent = new Intent(ProfileActivity.this, ChangePasswordActivity.class);
             startActivity(intent);
+            finish();
         });
 
         deleteAccount.setOnClickListener(view -> {
@@ -100,7 +116,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                Log.e("API_ERROR", "Error occurred: " + t.getMessage());
+                android.util.Log.e("API_ERROR", "Error occurred: " + t.getMessage());
                 Toast.makeText(ProfileActivity.this, "Get API Failed", Toast.LENGTH_SHORT).show();
             }
         });
@@ -125,11 +141,36 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Address> call, Throwable t) {
-                Log.e("API_ERROR", "Error occurred: " + t.getMessage());
+                android.util.Log.e("API_ERROR", "Error occurred: " + t.getMessage());
                 Toast.makeText(ProfileActivity.this, "Get API Failed", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
+    public static void getAddressIdByUserId(int userId, final AddressIdCallback callback) {
+        Call<Address> call = ApiService.apiService.getAddressByUserId(userId);
+
+        call.enqueue(new Callback<Address>() {
+            @Override
+            public void onResponse(Call<Address> call, Response<Address> response) {
+                if (response.isSuccessful()) {
+                    Address address = response.body();
+                    assert address != null;
+                    int addressId = address.getId();
+                    callback.onAddressIdReceived(addressId);
+                } else {
+                    callback.onAddressIdReceived(0);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Address> call, Throwable t) {
+                android.util.Log.e("API_ERROR", "Error occurred: " + t.getMessage());
+                callback.onAddressIdReceived(0);
+            }
+        });
+    }
+
 
     // Handle display logout dialog
     @SuppressLint("SetTextI18n")
@@ -158,6 +199,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void deleteAccount() {
         String id = LoginSession.getIdKey();
+
         if (id == null || id.isEmpty()) {
             Toast.makeText(ProfileActivity.this,
                     "Invalid user ID", Toast.LENGTH_SHORT).show();
@@ -170,6 +212,10 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
+//                    Log log = new Log(Integer.parseInt(id), Log.WARNING, getPhoneIpAddress(),
+//                            "Delete account", "Account id: " + id + " is deleted", Log.SUCCESS);
+//                    addLog(log);
+
                     Toast.makeText(ProfileActivity.this,
                             "Tài khoản đã được xóa thành công", Toast.LENGTH_SHORT).show();
 
@@ -178,6 +224,10 @@ public class ProfileActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
                 } else {
+//                    Log log = new Log(Integer.parseInt(id), Log.ALERT, getPhoneIpAddress(),
+//                            "Delete account", "Account id: " + id + " deletes failed", Log.FAILED);
+//                    addLog(log);
+
                     Toast.makeText(ProfileActivity.this,
                             "Xóa tài khoản thất bại", Toast.LENGTH_SHORT).show();
                 }
@@ -185,10 +235,33 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Log.e("API_ERROR", "Error occurred: " + t.getMessage());
+                android.util.Log.e("API_ERROR", "Error occurred: " + t.getMessage());
                 Toast.makeText(ProfileActivity.this, "Get API Failed", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void addLog(Log log) {
+        Call<Log> loginLog = ApiService.apiService.postLog(log);
+
+        loginLog.enqueue(new Callback<Log>() {
+            @Override
+            public void onResponse(Call<Log> call, Response<Log> response) {
+                if (response.isSuccessful()) {
+                    android.util.Log.e("API_SUCCESS", "Logs: " + response.body());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Log> call, Throwable t) {
+                android.util.Log.e("API_ERROR", "Error occurred: " + t.getMessage());
+            }
+        });
+    }
+
+    private String getPhoneIpAddress() {
+        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        return Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
     }
 
     // Check internet permission

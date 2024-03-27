@@ -84,8 +84,6 @@ public class CartActivity extends AppCompatActivity {
         });
 
         btnBack.setOnClickListener(view -> {
-            Intent intent = new Intent(this, ProductDetailActivity.class);
-            startActivity(intent);
             finish();
         });
     }

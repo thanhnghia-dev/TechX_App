@@ -28,6 +28,15 @@ public class Address implements Serializable {
         this.province = province;
     }
 
+    public Address(String name, String phone, String detail, String ward, String city, String province) {
+        this.name = name;
+        this.phone = phone;
+        this.detail = detail;
+        this.ward = ward;
+        this.city = city;
+        this.province = province;
+    }
+
     public int getId() {
         return id;
     }

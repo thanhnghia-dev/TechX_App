@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -29,9 +30,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProductFragment extends Fragment {
+    TextView searchBar;
     ShimmerFrameLayout shimmerProductCat;
     RecyclerView recyclerProductCat;
     ProductCatAdapter adapter;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_product, container, false);
@@ -40,6 +43,8 @@ public class ProductFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        searchBar = view.findViewById(R.id.searchBar);
 
         shimmerProductCat = view.findViewById(R.id.shimmer_product_cat);
         recyclerProductCat = view.findViewById(R.id.recycler_product_cat);
@@ -53,6 +58,10 @@ public class ProductFragment extends Fragment {
         } else {
             Toast.makeText(getActivity(), "Vui lòng kểm tra kết nối mạng...", Toast.LENGTH_SHORT).show();
         }
+
+        searchBar.setOnClickListener(v -> {
+            Toast.makeText(getActivity(), "Move to search page", Toast.LENGTH_SHORT).show();
+        });
     }
 
     // Load product cat list

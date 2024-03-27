@@ -18,6 +18,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.denzcoskun.imageslider.ImageSlider;
+import com.denzcoskun.imageslider.constants.ScaleTypes;
+import com.denzcoskun.imageslider.models.SlideModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.geocomply.techx_app.adapter.CategoryAdapter;
 import com.geocomply.techx_app.adapter.ProductAdapter;
@@ -33,6 +36,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
+    ImageSlider imageSlider;
     ShimmerFrameLayout shimmerCategory, shimmerNewProducts, shimmerHotProducts, shimmerPromotionProducts;
     RecyclerView recyclerCategory, recyclerNewProducts, recyclerHotProducts, recyclerPromotionProducts;
     ProductAdapter adapter;
@@ -46,6 +50,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        imageSlider = view.findViewById(R.id.imageSlider);
 
         recyclerCategory = view.findViewById(R.id.recycler_category);
         recyclerNewProducts = view.findViewById(R.id.recycler_new_products);
@@ -74,12 +80,25 @@ public class HomeFragment extends Fragment {
         shimmerPromotionProducts.startShimmer();
 
         if (checkInternetPermission()) {
+            loadImageSliderList();
             loadCategoryList();
             loadProductList();
         } else {
             Toast.makeText(getActivity(), "Vui lòng kểm tra kết nối mạng...", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    // Load image slider
+    private void loadImageSliderList() {
+        ArrayList<SlideModel> slideModels = new ArrayList<>();
+
+        slideModels.add(new SlideModel(R.drawable.banner1, ScaleTypes.FIT));
+        slideModels.add(new SlideModel(R.drawable.banner2, ScaleTypes.FIT));
+        slideModels.add(new SlideModel(R.drawable.banner3, ScaleTypes.FIT));
+        slideModels.add(new SlideModel(R.drawable.banner4, ScaleTypes.FIT));
+
+        imageSlider.setImageList(slideModels, ScaleTypes.FIT);
     }
 
     // Load category list

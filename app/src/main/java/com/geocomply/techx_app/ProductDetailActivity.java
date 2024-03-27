@@ -144,8 +144,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         });
 
         btnBack.setOnClickListener(view -> {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
             finish();
         });
     }

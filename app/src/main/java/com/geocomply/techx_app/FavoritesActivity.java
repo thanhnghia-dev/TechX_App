@@ -57,6 +57,8 @@ public class FavoritesActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Vui lòng kểm tra kết nối mạng...", Toast.LENGTH_SHORT).show();
         }
+
+        btnBack.setOnClickListener(v -> finish());
     }
 
     private void loadFavoriteList() {
