@@ -68,6 +68,17 @@
             android:layout_height="match_parent"
             android:layout_marginTop="4dp">
 
+            <TextView
+                android:id="@+id/emptyCart"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:gravity="center"
+                android:text="Giỏ hàng trống"
+                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:layout_above="@+id/processing"/>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_cart"
                 android:layout_width="match_parent"

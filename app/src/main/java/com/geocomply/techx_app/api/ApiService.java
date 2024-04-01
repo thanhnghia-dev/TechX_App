@@ -4,6 +4,8 @@ import com.geocomply.techx_app.model.Address;
 import com.geocomply.techx_app.model.Comment;
 import com.geocomply.techx_app.model.Favorite;
 import com.geocomply.techx_app.model.Log;
+import com.geocomply.techx_app.model.Order;
+import com.geocomply.techx_app.model.OrderDetail;
 import com.geocomply.techx_app.model.Product;
 import com.geocomply.techx_app.model.ShoppingCart;
 import com.geocomply.techx_app.model.User;
@@ -54,6 +56,8 @@ public interface ApiService {
 
     @GET("Products")
     Call<ArrayList<Product>> getProducts();
+    @GET("Products/Vendor/{vendorId}")
+    Call<ArrayList<Product>> getProductsByVendorId(@Path("vendorId") int vendorId);
     @GET("Products/{id}")
     Call<Product> getProduct(@Path("id") int id);
 
@@ -80,6 +84,14 @@ public interface ApiService {
     Call<Void> deleteShoppingCartsByUserId(@Path("userId") int userId);
     @DELETE("CartItems/{id}")
     Call<Void> deleteCartItem(@Path("id") int id);
+
+    @POST("Orders")
+    Call<Order> postOrder(@Body Order order);
+
+    @GET("OrderDetails/User/{userId}")
+    Call<ArrayList<OrderDetail>> getOrderDetailsByUserId(@Path("userId") int userId);
+    @GET("OrderDetails/Order/{orderId}")
+    Call<OrderDetail> getOrderDetailByOrderId(@Path("orderId") int orderId);
 
     @POST("Addresses")
     Call<Address> postAddress(@Body Address address);

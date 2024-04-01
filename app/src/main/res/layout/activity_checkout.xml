@@ -186,7 +186,7 @@
                             android:textColor="@color/black"/>
 
                         <RadioButton
-                            android:id="@+id/payEWallet"
+                            android:id="@+id/payCreditCard"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="13dp"
@@ -227,7 +227,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Tổng tiền hàng"
+                            android:text="Tạm tính"
                             android:textColor="@color/black"/>
 
                         <TextView
@@ -243,7 +243,7 @@
                     <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp">
+                        android:layout_marginTop="8dp">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -263,7 +263,7 @@
                     <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp">
+                        android:layout_marginTop="8dp">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -289,7 +289,7 @@
                     <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp">
+                        android:layout_marginTop="8dp">
 
                         <TextView
                             android:layout_width="wrap_content"

@@ -12,6 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,7 +35,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CartActivity extends AppCompatActivity {
-    TextView tvCounter, tvTotal;
+    TextView tvEmptyCart, tvCounter, tvTotal;
     ImageView btnBack, btnDelete;
     Button btnCheckout;
     RecyclerView recyclerCart;
@@ -48,6 +49,7 @@ public class CartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
 
+        tvEmptyCart = findViewById(R.id.emptyCart);
         tvCounter = findViewById(R.id.counter);
         tvTotal = findViewById(R.id.total);
         btnBack = findViewById(R.id.btnBack);
@@ -113,6 +115,8 @@ public class CartActivity extends AppCompatActivity {
 
                     adapter = new CartAdapter(getApplicationContext(), shoppingCarts);
                     recyclerCart.setAdapter(adapter);
+                } else {
+                    tvEmptyCart.setVisibility(View.VISIBLE);
                 }
             }
 

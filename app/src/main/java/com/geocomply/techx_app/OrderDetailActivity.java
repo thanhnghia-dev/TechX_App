@@ -8,19 +8,33 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.geocomply.techx_app.adapter.OrderAdapter;
+import com.geocomply.techx_app.api.ApiService;
+import com.geocomply.techx_app.model.Address;
 import com.geocomply.techx_app.model.Order;
 import com.geocomply.techx_app.model.OrderDetail;
+import com.geocomply.techx_app.model.Product;
+import com.geocomply.techx_app.model.User;
 
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class OrderDetailActivity extends AppCompatActivity {
     TextView tvOrderId, tvOrderDate, tvOrderStatus, tvFullName, tvPhone, tvAddress, tvProductName,
-            tvAmount, tvPrice, tvPaymentMethod, tvTemp, tvDiscount, tvTotalMoney;
+            tvAmount, tvPrice, tvPaymentMethod, tvTemp, tvTotalMoney;
     ImageView btnBack, productImage;
 
     @Override
@@ -39,7 +53,6 @@ public class OrderDetailActivity extends AppCompatActivity {
         tvPrice = findViewById(R.id.total);
         tvPaymentMethod = findViewById(R.id.paymentMethod);
         tvTemp = findViewById(R.id.temp);
-        tvDiscount = findViewById(R.id.discount);
         tvTotalMoney = findViewById(R.id.totalMoney);
         productImage = findViewById(R.id.productImage);
         btnBack = findViewById(R.id.btnBack);
@@ -49,7 +62,7 @@ public class OrderDetailActivity extends AppCompatActivity {
 
         if (checkInternetPermission()) {
             if (orderId != -1) {
-                loadOrderDetail();
+                loadOrderDetail(orderId);
             }
         } else {
             Toast.makeText(this, "Vui lòng kểm tra kết nối mạng...", Toast.LENGTH_SHORT).show();
@@ -59,13 +72,53 @@ public class OrderDetailActivity extends AppCompatActivity {
     }
 
     // Load order detail
-    private void loadOrderDetail() {
+    private void loadOrderDetail(int orderId) {
+        Call<OrderDetail> orderDetail = ApiService.apiService.getOrderDetailByOrderId(orderId);
 
+        orderDetail.enqueue(new Callback<OrderDetail>() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onResponse(Call<OrderDetail> call, Response<OrderDetail> response) {
+                if (response.isSuccessful()) {
+                    OrderDetail od = response.body();
+                    assert od != null;
+                    Order o = od.getOrderIdNavigation();
+                    Product p = od.getProdIdNavigation();
+                    User u = o.getUserIdNavigation();
+                    Address a = o.getAddrIdNavigation();
+                    String total = formatNumber((int) od.getPrice() * od.getAmount());
+
+                    tvOrderId.setText(String.valueOf(od.getOrderId()));
+                    tvOrderDate.setText(convertDateType(o.getOrderDate()));
+                    getOrderStatus(o.getStatus());
+                    tvFullName.setText(u.getName());
+                    tvPhone.setText(u.getPhone());
+                    tvAddress.setText(a.getDetail() + ", " + a.getWard()
+                            + ", " + a.getCity() + ", " + a.getProvince());
+                    tvProductName.setText(p.getName());
+                    tvAmount.setText(String.valueOf(od.getAmount()));
+                    tvPrice.setText(total + " ₫");
+                    tvPaymentMethod.setText(o.getPaymentMethod());
+                    tvTemp.setText(total + " ₫");
+                    tvTotalMoney.setText(total + " ₫");
+
+                    if (p.getImages() != null && !p.getImages().isEmpty()) {
+                        String imageUrl = p.getImages().get(0).getUrl();
+                        Glide.with(OrderDetailActivity.this).load(imageUrl).into(productImage);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OrderDetail> call, Throwable t) {
+                Log.e("API_ERROR", "Error occurred: " + t.getMessage());
+                Toast.makeText(OrderDetailActivity.this, "Get API Failed", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @SuppressLint("SetTextI18n")
-    private void getOrderStatus(Order order) {
-        int status = order.getStatus();
+    private void getOrderStatus(int status) {
         switch (status) {
             case 1:
                 tvOrderStatus.setText("Đang xử lý");
@@ -83,6 +136,25 @@ public class OrderDetailActivity extends AppCompatActivity {
                 tvOrderStatus.setText("Chờ thanh toán");
                 break;
         }
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    private String convertDateType(String inputDate) {
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        try {
+            Date date = inputFormat.parse(inputDate);
+            assert date != null;
+            return outputFormat.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String formatNumber(int number) {
+        DecimalFormat decimalFormat = new DecimalFormat("#,###,###");
+        return decimalFormat.format(number);
     }
 
     // Check internet permission

@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +23,6 @@ import com.denzcoskun.imageslider.models.SlideModel;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.geocomply.techx_app.adapter.CategoryAdapter;
 import com.geocomply.techx_app.adapter.ProductAdapter;
-import com.geocomply.techx_app.adapter.ProductCatAdapter;
 import com.geocomply.techx_app.api.ApiService;
 import com.geocomply.techx_app.model.Product;
 import com.geocomply.techx_app.model.Vendor;
@@ -82,7 +80,9 @@ public class HomeFragment extends Fragment {
         if (checkInternetPermission()) {
             loadImageSliderList();
             loadCategoryList();
-            loadProductList();
+            loadNewProductList();
+            loadHotProductList();
+            loadPromotionProductList();
         } else {
             Toast.makeText(getActivity(), "Vui lòng kểm tra kết nối mạng...", Toast.LENGTH_SHORT).show();
         }
@@ -127,8 +127,8 @@ public class HomeFragment extends Fragment {
     }
 
     // Load product list
-    private void loadProductList() {
-        Call<ArrayList<Product>> productList = ApiService.apiService.getProducts();
+    private void loadNewProductList() {
+        Call<ArrayList<Product>> productList = ApiService.apiService.getProductsByVendorId(2);
 
         productList.enqueue(new Callback<ArrayList<Product>>() {
             @Override
@@ -139,18 +139,8 @@ public class HomeFragment extends Fragment {
                     shimmerNewProducts.setVisibility(View.GONE);
                     recyclerNewProducts.setVisibility(View.VISIBLE);
 
-                    shimmerHotProducts.stopShimmer();
-                    shimmerHotProducts.setVisibility(View.GONE);
-                    recyclerHotProducts.setVisibility(View.VISIBLE);
-
-                    shimmerPromotionProducts.stopShimmer();
-                    shimmerPromotionProducts.setVisibility(View.GONE);
-                    recyclerPromotionProducts.setVisibility(View.VISIBLE);
-
                     adapter = new ProductAdapter(getContext(), products);
                     recyclerNewProducts.setAdapter(adapter);
-                    recyclerHotProducts.setAdapter(adapter);
-                    recyclerPromotionProducts.setAdapter(adapter);
                 }
             }
 
@@ -162,6 +152,57 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    private void loadHotProductList() {
+        Call<ArrayList<Product>> productList = ApiService.apiService.getProductsByVendorId(3);
+
+        productList.enqueue(new Callback<ArrayList<Product>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Product>> call, Response<ArrayList<Product>> response) {
+                if (response.isSuccessful()) {
+                    ArrayList<Product> products = response.body();
+
+                    shimmerHotProducts.stopShimmer();
+                    shimmerHotProducts.setVisibility(View.GONE);
+                    recyclerHotProducts.setVisibility(View.VISIBLE);
+
+                    adapter = new ProductAdapter(getContext(), products);
+                    recyclerHotProducts.setAdapter(adapter);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Product>> call, Throwable t) {
+                Log.e("API_ERROR", "Error occurred: " + t.getMessage());
+                Toast.makeText(getActivity(), "Get API Failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void loadPromotionProductList() {
+        Call<ArrayList<Product>> productList = ApiService.apiService.getProductsByVendorId(5);
+
+        productList.enqueue(new Callback<ArrayList<Product>>() {
+            @Override
+            public void onResponse(Call<ArrayList<Product>> call, Response<ArrayList<Product>> response) {
+                if (response.isSuccessful()) {
+                    ArrayList<Product> products = response.body();
+
+                    shimmerPromotionProducts.stopShimmer();
+                    shimmerPromotionProducts.setVisibility(View.GONE);
+                    recyclerPromotionProducts.setVisibility(View.VISIBLE);
+
+                    adapter = new ProductAdapter(getContext(), products);
+                    recyclerPromotionProducts.setAdapter(adapter);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ArrayList<Product>> call, Throwable t) {
+                Log.e("API_ERROR", "Error occurred: " + t.getMessage());
+                Toast.makeText(getActivity(), "Get API Failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    
     // Check internet permission
     public boolean checkInternetPermission() {
         ConnectivityManager manager = (ConnectivityManager) getActivity()

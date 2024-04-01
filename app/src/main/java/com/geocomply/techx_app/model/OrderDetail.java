@@ -8,7 +8,6 @@ public class OrderDetail implements Serializable {
     private int productId;
     private int amount;
     private double price;
-    private int status;
     private Order orderIdNavigation;
     private Product prodIdNavigation;
 
@@ -53,14 +52,6 @@ public class OrderDetail implements Serializable {
 
     public void setPrice(double price) {
         this.price = price;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
     }
 
     public Order getOrderIdNavigation() {

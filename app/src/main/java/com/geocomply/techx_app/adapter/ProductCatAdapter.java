@@ -50,6 +50,7 @@ public class ProductCatAdapter extends RecyclerView.Adapter<ProductCatAdapter.Pr
             int productId = product.getId();
             Intent intent = new Intent(context, ProductDetailActivity.class);
             intent.putExtra("productId", productId);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             context.startActivity(intent);
         });
     }

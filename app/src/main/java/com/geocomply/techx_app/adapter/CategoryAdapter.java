@@ -15,6 +15,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.geocomply.techx_app.ProductCatActivity;
 import com.geocomply.techx_app.ProductDetailActivity;
 import com.geocomply.techx_app.R;
 import com.geocomply.techx_app.model.Product;
@@ -49,7 +50,14 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         holder.bindData(vendor);
 
         holder.cvCategory.setOnClickListener(view -> {
-            Toast.makeText(context, vendor.getName(), Toast.LENGTH_SHORT).show();
+            int vendorId = vendor.getId();
+            String vendorName = vendor.getName();
+
+            Intent intent = new Intent(context, ProductCatActivity.class);
+            intent.putExtra("vendorId", vendorId);
+            intent.putExtra("vendorName", vendorName);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
         });
     }
 

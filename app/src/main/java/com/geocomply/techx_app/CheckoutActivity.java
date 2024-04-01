@@ -24,11 +24,13 @@ import com.geocomply.techx_app.api.ApiService;
 import com.geocomply.techx_app.common.LoginSession;
 import com.geocomply.techx_app.model.Address;
 import com.geocomply.techx_app.model.CartItem;
+import com.geocomply.techx_app.model.Order;
 import com.geocomply.techx_app.model.ShoppingCart;
 import com.geocomply.techx_app.model.Product;
 import com.geocomply.techx_app.model.User;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,14 +39,15 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CheckoutActivity extends AppCompatActivity {
-    TextView tvFullName, tvPhone, tvAddress, tvCounter, tvTemp, tvTotal;
+    TextView tvFullName, tvPhone, tvAddress, tvCounter, tvTemp, tvDiscount, tvTotal;
     ImageView btnBack;
     Button btnPayment;
-    RadioButton payCash, payEWallet, payATM;
+    RadioButton payCash, payCreditCard, payATM;
     RecyclerView recyclerCheckout;
     RelativeLayout btnDeliveryAddress;
     CheckoutAdapter adapter;
     LoginSession session;
+    int addressId, total = 0;
     ArrayList<ShoppingCart> shoppingCarts = new ArrayList<>();
 
     @SuppressLint("MissingInflatedId")
@@ -58,9 +61,10 @@ public class CheckoutActivity extends AppCompatActivity {
         tvAddress = findViewById(R.id.address);
         tvCounter = findViewById(R.id.counter);
         tvTemp = findViewById(R.id.temp);
+        tvDiscount = findViewById(R.id.discount);
         tvTotal = findViewById(R.id.total);
         payCash = findViewById(R.id.payCash);
-        payEWallet = findViewById(R.id.payEWallet);
+        payCreditCard = findViewById(R.id.payCreditCard);
         payATM = findViewById(R.id.payATM);
         btnBack = findViewById(R.id.btnBack);
         btnPayment = findViewById(R.id.btnPayment);
@@ -76,7 +80,6 @@ public class CheckoutActivity extends AppCompatActivity {
         if (checkInternetPermission()) {
             loadCartList();
             getUserInformation(Integer.parseInt(userId));
-            getUserAddress(Integer.parseInt(userId));
         } else {
             Toast.makeText(this, "Vui lòng kểm tra kết nối mạng...", Toast.LENGTH_SHORT).show();
         }
@@ -87,9 +90,7 @@ public class CheckoutActivity extends AppCompatActivity {
         });
 
         btnPayment.setOnClickListener(view -> {
-            Intent intent = new Intent(this, SuccessActivity.class);
-            startActivity(intent);
-            finish();
+            handlePayment(Integer.parseInt(userId));
         });
 
         btnBack.setOnClickListener(view -> {
@@ -109,7 +110,7 @@ public class CheckoutActivity extends AppCompatActivity {
                     if (user != null) {
                         tvFullName.setText(user.getName());
                         tvPhone.setText(user.getPhone());
-                        tvAddress.setText("Địa chỉ chi tiết");
+                        getUserAddress(id);
                     }
                 }
             }
@@ -133,6 +134,7 @@ public class CheckoutActivity extends AppCompatActivity {
                     Address address = response.body();
 
                     if (address != null) {
+                        addressId = address.getId();
                         tvAddress.setText(address.getDetail() + ", " + address.getWard()
                                 + ", " + address.getCity() + ", " + address.getProvince());
                     }
@@ -160,14 +162,28 @@ public class CheckoutActivity extends AppCompatActivity {
                     shoppingCarts = response.body();
 
                     assert shoppingCarts != null;
-                    int total = 0;
-                    for (ShoppingCart cart : shoppingCarts) {
-                        for (CartItem item : cart.getCartItems()) {
-                            Product product = item.prodIdNavigation;
-                            total += (int) (product.getDiscounted() * item.getAmount());
+                    int temp = 0, discount = 0;
+                    LocalDate date;
+
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                        date = LocalDate.now();
+                        int day = date.getDayOfMonth();
+                        int month = date.getMonthValue();
+
+                        for (ShoppingCart cart : shoppingCarts) {
+                            for (CartItem item : cart.getCartItems()) {
+                                Product product = item.prodIdNavigation;
+                                temp += (int) (product.getDiscounted() * item.getAmount());
+                            }
+                        }
+                        if (day == month) {
+                            discount = (int) (temp * 0.5);
                         }
                     }
-                    tvTemp.setText(formatNumber(total) + " ₫");
+                    total += temp - discount;
+
+                    tvTemp.setText(formatNumber(temp) + " ₫");
+                    tvDiscount.setText("-" + formatNumber(discount) + " ₫");
                     tvTotal.setText(formatNumber(total) + " ₫");
                     tvCounter.setText("Sản phẩm (" + shoppingCarts.size() + ")");
 
@@ -182,6 +198,49 @@ public class CheckoutActivity extends AppCompatActivity {
                 Toast.makeText(CheckoutActivity.this, "Get API Failed", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void handlePayment(int userId) {
+        String paymentMethod = getPaymentMethod();
+
+        Order order = new Order(userId, addressId, (double) total, paymentMethod);
+
+        if (!payCash.isChecked() || !payCreditCard.isChecked() || !payATM.isChecked()) {
+            Toast.makeText(this, "Vui lòng chọn Phương thức thanh toán!", Toast.LENGTH_SHORT).show();
+        } else {
+            Intent intent = new Intent(this, SuccessActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }
+
+    private void addOrder(Order order) {
+        Call<Order> insert = ApiService.apiService.postOrder(order);
+
+        insert.enqueue(new Callback<Order>() {
+            @Override
+            public void onResponse(Call<Order> call, Response<Order> response) {
+                if (response.isSuccessful()) {
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Order> call, Throwable t) {
+                Log.e("API_ERROR", "Error occurred: " + t.getMessage());
+                Toast.makeText(CheckoutActivity.this, "Get API Failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private String getPaymentMethod() {
+        if (payCash.isChecked()) {
+            return (String) payCash.getHint();
+        } else if (payCreditCard.isChecked()) {
+            return (String) payCreditCard.getHint();
+        } else {
+            return (String) payATM.getHint();
+        }
     }
 
     // Check internet permission

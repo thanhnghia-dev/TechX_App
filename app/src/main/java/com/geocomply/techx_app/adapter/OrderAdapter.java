@@ -15,10 +15,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.geocomply.techx_app.OrderDetailActivity;
+import com.geocomply.techx_app.ProductDetailActivity;
 import com.geocomply.techx_app.R;
+import com.geocomply.techx_app.model.Order;
 import com.geocomply.techx_app.model.OrderDetail;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHolder> {
@@ -47,15 +50,18 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
         holder.btnSeeDetail.setOnClickListener(view -> {
             int orderId = order.getOrderIdNavigation().getId();
-//            Intent intent = new Intent(context, OrderDetailActivity.class);
-//            intent.putExtra("orderId", orderId);
-//            context.startActivity(intent);
-
-            Toast.makeText(context, "Order id: " + orderId, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(context, OrderDetailActivity.class);
+            intent.putExtra("orderId", orderId);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
         });
 
         holder.btnReBuy.setOnClickListener(view -> {
-            Toast.makeText(context, "Buy item again", Toast.LENGTH_SHORT).show();
+            int productId = order.getProdIdNavigation().getId();
+            Intent intent = new Intent(context, ProductDetailActivity.class);
+            intent.putExtra("productId", productId);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
         });
     }
 
@@ -82,7 +88,7 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.OrderViewHol
 
         @SuppressLint("SetTextI18n")
         public void bindData(OrderDetail order) {
-            String total = formatNumber((int) order.getProdIdNavigation().getDiscounted() * order.getAmount());
+            String total = formatNumber((int) order.getPrice() * order.getAmount());
             int status = order.getOrderIdNavigation().getStatus();
 
             tvProductName.setText(order.getProdIdNavigation().getName());

@@ -37,7 +37,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class CartFragment extends Fragment {
-    TextView tvCounter, tvTotal;
+    TextView tvEmptyCart, tvCounter, tvTotal;
     ImageView btnDelete;
     Button btnCheckout;
     RecyclerView recyclerCart;
@@ -59,6 +59,7 @@ public class CartFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        tvEmptyCart = view.findViewById(R.id.emptyCart);
         tvCounter = view.findViewById(R.id.counter);
         tvTotal = view.findViewById(R.id.total);
         btnDelete = view.findViewById(R.id.btnDelete);
@@ -135,6 +136,8 @@ public class CartFragment extends Fragment {
                     recyclerCart.setAdapter(adapter);
 
                     updateCartCount(shoppingCarts.size());
+                } else {
+                    tvEmptyCart.setVisibility(View.VISIBLE);
                 }
             }
 

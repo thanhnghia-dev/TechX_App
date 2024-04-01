@@ -82,7 +82,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_toEndOf="@id/id"
-                        android:text="123456789"
                         android:textSize="17sp"
                         android:textColor="@color/black"
                         android:textStyle="bold"/>
@@ -107,7 +106,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:layout_toEndOf="@id/date"
-                        android:text="10:00 01/01/2024"
                         android:textSize="16sp"
                         android:textColor="@color/gray_light"/>
                 </RelativeLayout>
@@ -299,32 +297,6 @@
                         android:layout_alignParentEnd="true"
                         android:text="0đ"
                         android:textStyle="bold"
-                        android:textColor="@color/black"/>
-                </RelativeLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="10dp"
-                    android:background="#F6F6F6" />
-
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Giảm giá"
-                        android:textColor="@color/gray_light"/>
-
-                    <TextView
-                        android:id="@+id/discount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:text="0đ"
                         android:textColor="@color/black"/>
                 </RelativeLayout>
 

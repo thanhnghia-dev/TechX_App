@@ -3,6 +3,7 @@ package com.geocomply.techx_app.adapter;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
@@ -19,6 +20,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.geocomply.techx_app.ProductDetailActivity;
 import com.geocomply.techx_app.R;
 import com.geocomply.techx_app.model.ShoppingCart;
 import com.geocomply.techx_app.model.Product;
@@ -45,7 +47,19 @@ public class CheckoutAdapter extends RecyclerView.Adapter<CheckoutAdapter.CartVi
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull CartViewHolder holder, int position) {
-        holder.bindData(shoppingCartList.get(position));
+        ShoppingCart cart = shoppingCartList.get(position);
+        if (cart == null) {
+            return;
+        }
+        holder.bindData(cart);
+
+        holder.cvCart.setOnClickListener(view -> {
+            int productId = cart.getCartItems().get(0).getProdIdNavigation().getId();
+            Intent intent = new Intent(context, ProductDetailActivity.class);
+            intent.putExtra("productId", productId);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        });
     }
 
     @SuppressLint("SetTextI18n")

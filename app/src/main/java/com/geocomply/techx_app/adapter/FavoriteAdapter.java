@@ -47,6 +47,14 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
             return;
         }
         holder.bindData(favorite);
+
+        holder.cvProduct.setOnClickListener(view -> {
+            int productId = favorite.getProdIdNavigation().getId();
+            Intent intent = new Intent(context, ProductDetailActivity.class);
+            intent.putExtra("productId", productId);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -56,7 +64,8 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
 
     public static class FavoriteViewHolder extends RecyclerView.ViewHolder {
         TextView tvProductName, tvPrice, tvSpecification, tvDiscountPercent;
-        ImageView ProductImage;
+        ImageView productImage;
+        CardView cvProduct;
 
         public FavoriteViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -65,7 +74,8 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
             tvPrice = itemView.findViewById(R.id.price);
             tvSpecification = itemView.findViewById(R.id.specifications);
             tvDiscountPercent = itemView.findViewById(R.id.discountPercent);
-            ProductImage = itemView.findViewById(R.id.productImage);
+            productImage = itemView.findViewById(R.id.productImage);
+            cvProduct = itemView.findViewById(R.id.cvProduct);
         }
 
         @SuppressLint("SetTextI18n")
@@ -91,7 +101,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.Favori
 
             if (product.getImages() != null && !product.getImages().isEmpty()) {
                 String imageUrl = product.getImages().get(0).getUrl();
-                Glide.with(context).load(imageUrl).into(ProductImage);
+                Glide.with(context).load(imageUrl).into(productImage);
             }
         }
 

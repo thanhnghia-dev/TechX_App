@@ -19,6 +19,21 @@ public class Order implements Serializable {
     public Order() {
     }
 
+    public Order(int userId, int addrId, double total, String paymentMethod, List<OrderDetail> orderDetails) {
+        this.userId = userId;
+        this.addrId = addrId;
+        this.total = total;
+        this.paymentMethod = paymentMethod;
+        this.orderDetails = orderDetails;
+    }
+
+    public Order(int userId, int addrId, double total, String paymentMethod) {
+        this.userId = userId;
+        this.addrId = addrId;
+        this.total = total;
+        this.paymentMethod = paymentMethod;
+    }
+
     public int getId() {
         return id;
     }
