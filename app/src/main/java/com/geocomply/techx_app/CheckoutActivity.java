@@ -47,7 +47,7 @@ public class CheckoutActivity extends AppCompatActivity {
     RelativeLayout btnDeliveryAddress;
     CheckoutAdapter adapter;
     LoginSession session;
-    int addressId, total = 0;
+    int addressId, total;
     ArrayList<ShoppingCart> shoppingCarts = new ArrayList<>();
 
     @SuppressLint("MissingInflatedId")
@@ -180,7 +180,7 @@ public class CheckoutActivity extends AppCompatActivity {
                             discount = (int) (temp * 0.5);
                         }
                     }
-                    total += temp - discount;
+                    total = temp - discount;
 
                     tvTemp.setText(formatNumber(temp) + " ₫");
                     tvDiscount.setText("-" + formatNumber(discount) + " ₫");

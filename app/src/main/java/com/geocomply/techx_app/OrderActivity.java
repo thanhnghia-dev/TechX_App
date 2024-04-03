@@ -1,41 +1,19 @@
 package com.geocomply.techx_app;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.geocomply.techx_app.adapter.OrderAdapter;
-import com.geocomply.techx_app.api.ApiService;
-import com.geocomply.techx_app.common.LoginSession;
-import com.geocomply.techx_app.model.Image;
-import com.geocomply.techx_app.model.Order;
-import com.geocomply.techx_app.model.OrderDetail;
-import com.geocomply.techx_app.model.Product;
-
-import java.util.ArrayList;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import com.geocomply.techx_app.adapter.ViewPagerAdapter;
+import com.google.android.material.tabs.TabLayout;
 
 public class OrderActivity extends AppCompatActivity {
-    LinearLayout emptyOrder;
     ImageView btnBack;
-    RecyclerView recyclerOrder;
-    OrderAdapter adapter;
-    LoginSession session;
+    TabLayout tabLayout;
+    ViewPager2 viewPager2;
+    ViewPagerAdapter viewPagerAdapter;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -43,55 +21,37 @@ public class OrderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
 
-        emptyOrder = findViewById(R.id.emptyOrder);
         btnBack = findViewById(R.id.btnBack);
-        recyclerOrder = findViewById(R.id.recycler_order);
+        tabLayout = findViewById(R.id.tabLayout);
+        viewPager2 = findViewById(R.id.viewPager);
+        viewPagerAdapter = new ViewPagerAdapter(this);
+        viewPager2.setAdapter(viewPagerAdapter);
 
-        recyclerOrder.setHasFixedSize(true);
-        recyclerOrder.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-
-        session = new LoginSession(getApplicationContext());
-        String userId = LoginSession.getIdKey();
-
-        if (checkInternetPermission()) {
-            loadOrderList(Integer.parseInt(userId));
-        } else {
-            Toast.makeText(this, "Vui lòng kểm tra kết nối mạng...", Toast.LENGTH_SHORT).show();
-        }
-
-        btnBack.setOnClickListener(v -> finish());
-    }
-
-    // Load order list
-    private void loadOrderList(int userId) {
-        Call<ArrayList<OrderDetail>> order = ApiService.apiService.getOrderDetailsByUserId(userId);
-
-        order.enqueue(new Callback<ArrayList<OrderDetail>>() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onResponse(Call<ArrayList<OrderDetail>> call, Response<ArrayList<OrderDetail>> response) {
-                if (response.isSuccessful()) {
-                    ArrayList<OrderDetail> orderDetails = response.body();
-                    if (orderDetails != null && !orderDetails.isEmpty()) {
-                        adapter = new OrderAdapter(getApplicationContext(), orderDetails);
-                        recyclerOrder.setAdapter(adapter);
-                    } else {
-                        emptyOrder.setVisibility(View.VISIBLE);
-                    }
-                }
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager2.setCurrentItem(tab.getPosition());
             }
 
             @Override
-            public void onFailure(Call<ArrayList<OrderDetail>> call, Throwable t) {
-                Log.e("API_ERROR", "Error occurred: " + t.getMessage());
-                Toast.makeText(OrderActivity.this, "Get API Failed", Toast.LENGTH_SHORT).show();
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
             }
         });
-    }
 
-    // Check internet permission
-    public boolean checkInternetPermission() {
-        ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
-        return networkInfo != null && networkInfo.isConnected();
+        viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+            @Override
+            public void onPageSelected(int position) {
+                super.onPageSelected(position);
+                tabLayout.getTabAt(position).select();
+            }
+        });
+
+        btnBack.setOnClickListener(v -> finish());
     }
 }

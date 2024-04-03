@@ -24,6 +24,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface ApiService {
     String apiUrl = "http://192.168.1.20/api/";
@@ -90,6 +91,8 @@ public interface ApiService {
 
     @GET("OrderDetails/User/{userId}")
     Call<ArrayList<OrderDetail>> getOrderDetailsByUserId(@Path("userId") int userId);
+    @GET("OrderDetails/Status/{status}")
+    Call<ArrayList<OrderDetail>> getOrderDetailsByStatus(@Path("status") int status, @Query("userId") int userId);
     @GET("OrderDetails/Order/{orderId}")
     Call<OrderDetail> getOrderDetailByOrderId(@Path("orderId") int orderId);
 
